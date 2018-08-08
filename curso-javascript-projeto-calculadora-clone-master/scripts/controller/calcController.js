@@ -1,6 +1,8 @@
 class CalcController{
 	// convensão: _ simbolo para private
 	constructor(){
+		this._audio = new Audio ('click.mp3');
+		this._audioOnOff = true;
 		this._lastNumber = '';
 		this._lastOperatpr = '';
 		this._operation = [];
@@ -11,20 +13,91 @@ class CalcController{
 		this._currentDate;
 		this.initialize();
 		this.initButtonsEvents();
+		this.initKeyboard();
+	}
+	pasteFromClipboard(){
+		document.addEventListener('paste', e=>{
+			let text = e.clipboardData.getData('Text');
+			this.displayCalc = parseFloat(text);
+			console.log(text);
+		});
+	}
+	copyToClipboard(){
+		let input = document.createElement('input');
+		input.value = this.displayCalc;
+		document.body.appendChild(input);
+		input.select();
+		document.execCommand("Copy");
+		input.remove();
 	}
 
-	initialize(){
-		
+	initialize(){		
 		this.setDisplayDateTime();
-
 		setInterval(()=>{
 			this.setDisplayDateTime();
 		}, 1000);
-		/*setTimeout(()=>{
-			clearInterval(interval);
-		},10000);*/
-
 		this.setLastNumberToDisplay();
+		this.pasteFromClipboard();
+		document.querySelectorAll('.btn-ac').forEach(btn=>{
+			btn.addEventListener('dbclick', e=>{
+				this.toggleAudio();
+			});
+		});
+	}
+	toggleAudio(){
+		this._audioOnOff = !this._audioOnOff;
+	}
+	playAudio(){
+		if(this._audioOnOff){
+			this._audio.currentTime = 0;
+			this._audio.play();
+		}
+	}
+
+	//método para recuperar eventos de teclado
+	initKeyboard(){
+
+		document.addEventListener('keyup', e=>{
+			this.playAudio();
+			switch(e.key){
+				case 'Escape':
+					this.clearAll();
+					break;
+				case 'Backspace':
+					this.clearEntry();
+					break;
+				case '+':				
+				case '-':
+				case '*':
+				case '/':
+				case '%':
+					this.addOperation(e.key);
+					break;
+				case 'Enter':
+				case '=':
+					this.calc();
+					break;
+				case '.':
+				case ',':
+					this.addDot();
+					break;
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+					this.addOperation(parseInt(e.key));
+					break;	
+				case 'c':
+					if(e.ctrlKey) this.copyToClipboard();
+					break;		
+			}
+		});
 	}
 
 	addEventListenerAll(element, events, fn){
@@ -36,6 +109,7 @@ class CalcController{
 	clearAll(){
 		this._operation = [];
 		this._lastNumber = "";
+		this._lastOperatpr = "";
 		this.setLastNumberToDisplay();
 	}
 	clearEntry(){
@@ -113,8 +187,6 @@ class CalcController{
 			if(this.isOperator(value)){
 				//trocar o operador
 				this.setLastOperation(value);
-			}else if(isNaN(value)){				
-				console.log(value);
 			}else{
 				//situação inicial, para quando o vetor de operações esta vazio
 				this.pushOperation(value);
@@ -127,7 +199,7 @@ class CalcController{
 				this.pushOperation(value);
 			}else{
 				let newValue = this.getLastOperation().toString() + value.toString();		
-				this.setLastOperation(parseInt(newValue));
+				this.setLastOperation(newValue);
 				this.setLastNumberToDisplay();
 			}		
 		}
@@ -136,8 +208,20 @@ class CalcController{
 	getLastOperation(){
 		return this._operation[this._operation.length - 1];
 	}
+	addDot(){
 
+		let lastOperation = this.getLastOperation();
+		
+		if(typeof lastOperation === 'string' && lastOperation.split('').indexOf('.')>-1) return;
+		if(this.isOperator(lastOperation) || !lastOperation){
+			this.pushOperation('0.');
+		}else{
+			this.setLastOperation(lastOperation.toString() + '.');
+		}
+		this.setLastNumberToDisplay();
+	}
 	execBtn(value){
+		this.playAudio();
 		switch(value){
 			case 'ac':
 				this.clearAll();
@@ -164,7 +248,7 @@ class CalcController{
 				this.calc();
 				break;
 			case 'ponto':
-				this.addOperation('.');
+				this.addDot();
 				break;
 			case '0':
 			case '1':
