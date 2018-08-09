@@ -30,7 +30,6 @@ class CalcController{
 		document.execCommand("Copy");
 		input.remove();
 	}
-
 	initialize(){		
 		this.setDisplayDateTime();
 		setInterval(()=>{
@@ -53,7 +52,6 @@ class CalcController{
 			this._audio.play();
 		}
 	}
-
 	//método para recuperar eventos de teclado
 	initKeyboard(){
 
@@ -132,8 +130,13 @@ class CalcController{
 		}
 	}
 	getResult(){
-
-		return eval(this._operation.join(""));
+		try{
+			return eval(this._operation.join(""));
+		}catch(e){
+			setTimeout(()=>{
+				this.setError();
+			},1);			
+		}
 	}
 	calc(){			
 		let last = '';
@@ -310,6 +313,10 @@ class CalcController{
 	}
 
 	set displayCalc(valor){
+		if(valor.toString().length > 10){
+			this.setError();
+			return false;
+		}
 		this._displayCalcEl.innerHTML = valor;
 	}
 
