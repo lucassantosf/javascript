@@ -42,7 +42,7 @@ class CalcController{
 					if(textBtn.length > 2){
 						let textBtn2 =  btn.className.replace("btn btn-others col-sm btn-","");
 						console.log(textBtn2);
-						this.execBtn(textBtn.toString());
+						this.execBtn(textBtn2.toString());
 					}else{
 						console.log(textBtn);
 						this.execBtn(textBtn);
@@ -76,7 +76,7 @@ class CalcController{
 				this.clearEntry();
 				break;
 			case 'adicao':
-				this.addOperation('+');
+				this.addOperation("+");
 				break;
 			case 'subtracao':
 				this.addOperation('-');
@@ -146,27 +146,34 @@ class CalcController{
 
 	//Este método adiciona operações para o vetor de cálculos
 	addOperation(value){
+		
 		//Verificação para definir se o valor passado é um Número ou uma String com o método isNaN
-		if(isNaN(this.getLastOperation())){
+		if(isNaN(this.getLastOperation())){			
 			//String
 			if(this.isOperator(value)){
 				//Trocar o operador
 				this.setLastOperation(value);
 			}else if(isNaN(value)){
-
-				//Outro
+				//Outro				
 				console.log(value);
 			}else{
 				//Esta condição é somente para a primeira inserção de dados no vetor para não retornar undefined 
-				this._operation.push(value); //Método Push adiciona um item ao vetor
+				this.pushOperation(value); //Método Push adiciona um item ao vetor
+			
 			}
-		}else{
+		}else{			
 			//Number
-			let newValue = this.getLastOperation().toString() + value.toString();
-			// Sendo um número o valor do botão clicado, a idéia é concatenar a última posição ao valor atual. Ambas as variaveis são manipulador em texto com o toString(). 
-			this.setLastOperation(parseInt(newValue)); //Método Push adiciona um item ao vetor
+			if(this.isOperator(value)){				
+				this.pushOperation(value);
+			}else{
+				let newValue = this.getLastOperation().toString() + value.toString();
+				// Sendo um número o valor do botão clicado, a idéia é concatenar a última posição ao valor atual. Ambas as variaveis são manipulador em texto com o toString(). 
+				this.setLastOperation(parseInt(newValue)); //Método Push adiciona um item ao vetor
+				//atualizar display
+				this.setLastNumberToDisplay();
+			}			
 		}
-		console.log(this._operation);
+		
 	}
 
 	//Este método recupera o último valor do array Operation
@@ -182,6 +189,26 @@ class CalcController{
 	//Este método serve para trocar a variável concatenada entre os números convertidos em texto, à última posição do array Operation
 	setLastOperation(value){
 		this._operation[this._operation.length-1] = value;
+	}
+	//Este método apenas é responsável por receber um valor e fazer um push no vetor de operações
+	pushOperation(value){
+		this._operation.push(value);
+
+		if(this._operation.length > 3){			
+			this.calc();			
+		}
+	}
+
+	//Este método com o Eval irá juntar as tres posições do vetor em uma unica expressão para auxiliar num futuro calculo
+	calc(){
+		let last = this._operation.pop();
+		let result = eval(this._operation.join(""));
+		this._operation = [result, last];
+	}
+
+	//Este método coloca no display o último número no display
+	setLastNumberToDisplay(){
+
 	}
 
 	// Encapsulamentos ----- Getters e Setter -----------------------------------------------------------------------------------------------------------------------------------------------
