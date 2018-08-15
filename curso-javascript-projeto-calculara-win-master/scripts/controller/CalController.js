@@ -3,7 +3,9 @@ class CalcController{
 	//Método Construtor
 	constructor(){
 		// quando declarado com this. em qualquer lugar da classe esta váriavel poderá ser utilizada
-		// Por Convensão atributos com _ são private				
+		// Por convensão atributos com _ são private				
+		this._lastOperator = '';//Serve para guardar o último operador
+		this._lastNumber - '';//Serve para guardar o último número
 		this._operation = [];//Variável com idéia para guardar a última operação
 		this._locale = 'pt-BR'; // Variável para definir o idioma nas funções de tempo e hora
 		this._displayCalcEl = document.querySelector("#display"); // Variáveis selecionam os elementos do body pelo seu ID
@@ -15,8 +17,7 @@ class CalcController{
 	}
 
 	//Tudo que irá acontecer quando iniciar o objeto
-	initialize(){		
-		
+	initialize(){				
 		this.setDisplayDateTime();//Define no HTML a data e hora atual
 
 		//Função executada em intervalo de tempo, neste caso executa uma arrow function em 1000 milisegundos
@@ -27,30 +28,26 @@ class CalcController{
 		/*setTimeout(()=>{ //Esta função aguarda um determinado período para executar
 			clearInterval(interval);
 		},10000);*/
-
+		this.setLastNumberToDisplay(); //Aqui o método ira mostrar o número zero na inicialização
 	}
 
 	//Eventos dos botões
 	initButtonsEvents(){
 		let buttons = document.querySelectorAll("#calculadora > div, #buttons button"); //Seleciona todos os elementos pelo ID e o tipo do elemento
-		
 		buttons.forEach((btn,index)=>{
 			this.addEventListenerAll(btn,"click drag", e => { //Apartir do evento do click, precisa-se da classe do elemento clicado
 				try{
 					let textBtn = btn.className.replace("btn btn-number col-sm btn-","");
 					//Esta condição irá verificar se o botão clicado é um número, caso a classe retornada no replace for diferente para o que é esperado para número, foi clicado sobre alguma operação
 					if(textBtn.length > 2){
-						let textBtn2 =  btn.className.replace("btn btn-others col-sm btn-","");
-						console.log(textBtn2);
+						let textBtn2 =  btn.className.replace("btn btn-others col-sm btn-","");						
 						this.execBtn(textBtn2.toString());
-					}else{
-						console.log(textBtn);
+					}else{						
 						this.execBtn(textBtn);
 					}
 				}catch(err){
 					console.log(err);
 				}
-
 			});
 			this.addEventListenerAll(btn, "mouseover mouseup mousedown", e=>{
 				btn.style.cursor = "pointer";
@@ -59,7 +56,6 @@ class CalcController{
 	}
 
 	//Este método serve para adicionar mais de um evento à um determinado elemento com o método nativo split. O split recebe um texto separador, o espaço, e assim para cada espaço será adicionado em um vetor. O forEach irá rodar baseado no tamanho do vetor, e para cada repetição, irá um eventlistener 
-	
 	addEventListenerAll(element, events, fn){
 		events.split(' ').forEach(event => {
 			element.addEventListener(event, fn, false);
@@ -109,7 +105,7 @@ class CalcController{
 			
 				break;
 			case 'igual':
-			
+				this.calc();
 				break;
 			case '0':
 			case '1':
@@ -132,11 +128,13 @@ class CalcController{
 	//Este método é responsável pelo Botão C - Limpa Tudo
 	clearAll(){
 		this._operation = [];
+		this.setLastNumberToDisplay();
 	}
 
 	//Este método é responsável pelo Botão CE - Clear Entry, limpar a última entrada
 	clearEntry(){
 		this._operation.pop(); //Método Pop retira o último item do vetor
+		this.setLastNumberToDisplay();
 	}
 
 	//Este método serve para exibir mensagem de erro
@@ -159,7 +157,7 @@ class CalcController{
 			}else{
 				//Esta condição é somente para a primeira inserção de dados no vetor para não retornar undefined 
 				this.pushOperation(value); //Método Push adiciona um item ao vetor
-			
+				this.setLastNumberToDisplay(); //Atualiza o display com o número digitado pela primeira vez
 			}
 		}else{			
 			//Number
@@ -190,6 +188,7 @@ class CalcController{
 	setLastOperation(value){
 		this._operation[this._operation.length-1] = value;
 	}
+
 	//Este método apenas é responsável por receber um valor e fazer um push no vetor de operações
 	pushOperation(value){
 		this._operation.push(value);
@@ -201,14 +200,61 @@ class CalcController{
 
 	//Este método com o Eval irá juntar as tres posições do vetor em uma unica expressão para auxiliar num futuro calculo
 	calc(){
-		let last = this._operation.pop();
-		let result = eval(this._operation.join(""));
-		this._operation = [result, last];
+
+		let last = '';
+		this._lastOperator = this.getLastItem();
+		if(this._operation.length<3){
+			let firtItem = this._operation[0];
+			this._operation = [firtItem, this._lastOperator, this._lastNumber];
+		}
+		//Só pode retirar o ultimo item do _operation se tiver mais que 3 itens, para o botão de igual conseguir retornar alguma valor no display
+		if(this._operation.length > 3){
+			last = this._operation.pop();
+			//Serve para encontrar o resultado quando o igual for clicado duas vezes			
+			this._lastNumber = this.getResult();
+		}else if(this._operation.length ==3){			
+			this._lastNumber = this.getLastItem(false);
+		}
+
+		let result = this.getResult(); 
+		if(last == '%'){
+			result /= 100;
+			this._operation = [result];
+		}else{			
+			this._operation = [result];
+			if(last) this._operation.push(last);
+		}		
+		this.setLastNumberToDisplay();
 	}
 
-	//Este método coloca no display o último número no display
+	//Este método coloca no display o último número do vetor operation
 	setLastNumberToDisplay(){
+		let lastNumber = this.getLastItem(false);
+		if(!lastNumber) lastNumber = 0;
+		this.displayCalc = lastNumber;
+	}
 
+	//Este método é responsável apenas por retornar o resultado
+	//O Eval realiza a soma de uma string com os elementos de um vetor, o join é um método que agrupa os valores de um vetor em um texto único
+	//Assim o eval e o join juntos calculam os valores de todos os elementos do vetor operation
+	getResult(){
+		return eval(this._operation.join(""));
+	}
+
+	//Este método é responsável apenas por retornar a última posição do vetor _operation
+	getLastItem(isOperator = true){
+		//A idéia de percorrer o for é descobrir o último número, desde que seja na ultima posição do vetor. Se a ultima posição for numero, mostra o resultado na tela
+		let lastItem;
+		for(let i = this._operation.length - 1; i >= 0; i--){			
+			if(this.isOperator(this._operation[i]) == isOperator){
+				lastItem = this._operation[i];
+				break;
+			}			
+		}
+		if(!lastItem){
+			lastItem = (isOperator) ? this._lastOperator : this._lastNumber;
+		}
+		return lastItem;
 	}
 
 	// Encapsulamentos ----- Getters e Setter -----------------------------------------------------------------------------------------------------------------------------------------------
