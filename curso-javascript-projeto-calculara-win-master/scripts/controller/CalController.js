@@ -3,7 +3,9 @@ class CalcController{
 	//Método Construtor
 	constructor(){
 		// quando declarado com this. em qualquer lugar da classe esta váriavel poderá ser utilizada
-		// Por convensão atributos com _ são private				
+		// Por convensão atributos com _ são private	
+		this._audio = new Audio('click.mp3');//Arquivo de áudio		
+		this._audioOnOff = true;//Responsável pelo funcionamento do áudio 	
 		this._lastOperator = '';//Serve para guardar o último operador
 		this._lastNumber - '';//Serve para guardar o último número
 		this._operation = [];//Variável com idéia para guardar a última operação
@@ -14,6 +16,26 @@ class CalcController{
 		this._currentDate;
 		this.initialize();
 		this.initButtonsEvents();
+		this.initKeyboard();
+	}
+
+	//Este método é responsável pela área de transferência para copiar dados
+	copyToClipboard(){
+		let input = document.createElement('input');
+		input.value = this.displayCalc;
+		document.body.appendChild(input);
+		input.select();
+		document.execCommand("Copy");
+		input.remove();
+	}
+
+	//Este método é responsável pela área de transferência para colar dados
+	pasteFromClipboard(){
+		document.addEventListener('paste',e=>{
+			let text = e.clipboardData.getData('Text');
+			this.displayCalc = parseFloat(text);
+			this.addOperation(parseFloat(text));
+		});
 	}
 
 	//Tudo que irá acontecer quando iniciar o objeto
@@ -29,6 +51,87 @@ class CalcController{
 			clearInterval(interval);
 		},10000);*/
 		this.setLastNumberToDisplay(); //Aqui o método ira mostrar o número zero na inicialização
+		this.pasteFromClipboard();//
+
+		document.querySelectorAll('.btn-ac').forEach(btn=>{
+			btn.addEventListener('dblclick',e=>{
+				this.toggleAudio();
+			});
+		});
+	}
+
+	//Este método serve para 
+	toggleAudio(){
+		this._audioOnOff = !this._audioOnOff; 
+	}
+
+	//Este método serve para
+	playAudio(){
+		if(this._audioOnOff){
+			this._audio.currentTime = 0;//Esta linha é para sempre executar o áudio do inicio, pois caso o audio fosse executado muito em seguida teria a impressão que não esta sendo executado
+			this._audio.play();
+		}
+	}
+
+	//Este método é responsável por distribuir cada evento do teclado
+	initKeyboard(){
+		document.addEventListener('keyup',e=>{
+			this.playAudio();
+			switch(e.key){
+				case 'Escape':
+					this.clearAll();
+					break;
+				case 'Backspace':
+					this.clearEntry();
+					break;
+				case '+':					
+				case '-':					
+				case '*':					
+				case '/':					
+				case '%':
+					this.addOperation(e.key);
+					break;
+				case '.':
+				case ',':
+					this.addComma();
+					break;
+				case 'raiz':
+					this.calcRaiz();
+					break;
+				case 'expo':
+				
+					break;
+				case 'denominador':
+				
+					break;
+				case 'traco':
+				
+					break;
+				case 'maismenos':
+				
+					break;
+				case 'Enter':
+				case '=':
+					this.calc();
+					break;
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+					this.addOperation(parseInt(e.key));
+				 	break;
+				case 'c':
+					if(e.ctrlKey) this.copyToClipboard();
+					break;
+				
+			}
+		});
 	}
 
 	//Eventos dos botões
@@ -64,6 +167,7 @@ class CalcController{
 
 	//Este método recebe o valor do botão para identificar sua ação através do Switch
 	execBtn(value){
+		this.playAudio();
 		switch(value){
 			case 'c':
 				this.clearAll();
@@ -87,10 +191,10 @@ class CalcController{
 				this.addOperation('%');
 				break;
 			case 'virgula':
-				this.addOperation(',');
+				this.addComma();
 				break;
 			case 'raiz':
-			
+				this.calcRaiz();
 				break;
 			case 'expo':
 			
@@ -126,8 +230,10 @@ class CalcController{
 	}
 
 	//Este método é responsável pelo Botão C - Limpa Tudo
-	clearAll(){
+	clearAll(){		
 		this._operation = [];
+		this._lastNumber = '';
+		this._lastOperator = '';
 		this.setLastNumberToDisplay();
 	}
 
@@ -151,9 +257,6 @@ class CalcController{
 			if(this.isOperator(value)){
 				//Trocar o operador
 				this.setLastOperation(value);
-			}else if(isNaN(value)){
-				//Outro				
-				console.log(value);
 			}else{
 				//Esta condição é somente para a primeira inserção de dados no vetor para não retornar undefined 
 				this.pushOperation(value); //Método Push adiciona um item ao vetor
@@ -166,7 +269,7 @@ class CalcController{
 			}else{
 				let newValue = this.getLastOperation().toString() + value.toString();
 				// Sendo um número o valor do botão clicado, a idéia é concatenar a última posição ao valor atual. Ambas as variaveis são manipulador em texto com o toString(). 
-				this.setLastOperation(parseInt(newValue)); //Método Push adiciona um item ao vetor
+				this.setLastOperation(newValue); //Método Push adiciona um item ao vetor
 				//atualizar display
 				this.setLastNumberToDisplay();
 			}			
@@ -192,7 +295,6 @@ class CalcController{
 	//Este método apenas é responsável por receber um valor e fazer um push no vetor de operações
 	pushOperation(value){
 		this._operation.push(value);
-
 		if(this._operation.length > 3){			
 			this.calc();			
 		}
@@ -227,6 +329,11 @@ class CalcController{
 		this.setLastNumberToDisplay();
 	}
 
+	//Este método faz a raiz quadrada e coloca o resultado diretamente no display
+	calcRaiz(){		
+		this.displayCalc = Math.sqrt(this.getLastOperation());
+	}
+
 	//Este método coloca no display o último número do vetor operation
 	setLastNumberToDisplay(){
 		let lastNumber = this.getLastItem(false);
@@ -255,6 +362,20 @@ class CalcController{
 			lastItem = (isOperator) ? this._lastOperator : this._lastNumber;
 		}
 		return lastItem;
+	}
+
+	//Este método
+	addComma(){
+		let lastOperation = this.getLastOperation();
+		if(typeof lastOperation === 'string' && lastOperation.split('').indexOf('.') > -1) return; //Aqui somente sai do método se a ultima operacao foi uma string e 
+		//se o splt(serve para separar o texto em um vetor de acordo aos seus elementos e perguntar se tem o ponto . entre eles)
+		//saindo do método se ambos forem verdade
+		if(this.isOperator(lastOperation) || !lastOperation){
+			this.pushOperation('0.');
+		}else{
+			this.setLastOperation(lastOperation.toString()+'.');
+		}
+		this.setLastNumberToDisplay();
 	}
 
 	// Encapsulamentos ----- Getters e Setter -----------------------------------------------------------------------------------------------------------------------------------------------
