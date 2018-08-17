@@ -194,6 +194,7 @@ class CalcController{
 				this.addComma();
 				break;
 			case 'raiz':
+				//this.addOperation('√');
 				this.calcRaiz();
 				break;
 			case 'expo':
@@ -245,6 +246,7 @@ class CalcController{
 
 	//Este método serve para exibir mensagem de erro
 	setError(){
+		this._operation.pop();
 		this.displayCalc = "Error";
 	}
 
@@ -284,7 +286,7 @@ class CalcController{
 
 	//Este método verifica se o valor passado é um operador
 	isOperator(value){
-		return(['+','-','*','%','/'].indexOf(value) > -1);
+		return(['+','-','*','%','/','√'].indexOf(value) > -1);
 	}
 
 	//Este método serve para trocar a variável concatenada entre os números convertidos em texto, à última posição do array Operation
@@ -302,7 +304,6 @@ class CalcController{
 
 	//Este método com o Eval irá juntar as tres posições do vetor em uma unica expressão para auxiliar num futuro calculo
 	calc(){
-
 		let last = '';
 		this._lastOperator = this.getLastItem();
 		if(this._operation.length<3){
@@ -322,6 +323,8 @@ class CalcController{
 		if(last == '%'){
 			result /= 100;
 			this._operation = [result];
+		}else if(last == '√'){
+			console.log('raizz');
 		}else{			
 			this._operation = [result];
 			if(last) this._operation.push(last);
@@ -330,7 +333,8 @@ class CalcController{
 	}
 
 	//Este método faz a raiz quadrada e coloca o resultado diretamente no display
-	calcRaiz(){		
+	calcRaiz(){	
+		console.log(this.getLastOperation());	
 		this.displayCalc = Math.sqrt(this.getLastOperation());
 	}
 
@@ -345,7 +349,14 @@ class CalcController{
 	//O Eval realiza a soma de uma string com os elementos de um vetor, o join é um método que agrupa os valores de um vetor em um texto único
 	//Assim o eval e o join juntos calculam os valores de todos os elementos do vetor operation
 	getResult(){
-		return eval(this._operation.join(""));
+		try{
+			return eval(this._operation.join(""));
+		}catch(e){
+			//Caso houver algum problema na conversão do eval para calcular o resultado, será exibido mensagem de erro
+			//console.log(eval(this._operation.join("")));
+			//this.setError();			
+		}
+		
 	}
 
 	//Este método é responsável apenas por retornar a última posição do vetor _operation
@@ -396,6 +407,11 @@ class CalcController{
 
 	// Set's
 	set displayCalc(valor){
+		//Valida se o valor esta com muitos algarismos pois se tiver apresentara erro na tela
+		if(valor.toString().length > 10){
+			this.setError();
+			return false;
+		}
 		//altera o valor no HTML
 		this._displayCalcEl.innerHTML = valor;
 	}
