@@ -6,6 +6,7 @@ class UserController{
 		this.tableEl = document.getElementById(tableId);
 		this.onSubmit();
 		this.onEdit();
+		this.selectAll();
 	}
 
 	onEdit(){
@@ -18,52 +19,81 @@ class UserController{
 			event.preventDefault();//Cancela o comportamento padrão do formulário, para não atualizar a página ao evento submit
 			
 			let btn = this.formUpdateEl.querySelector("[type=submit]");
+			
 			btn.disabled = true;
+			
 			let values = this.getValues(this.formUpdateEl);
 			
 			let index = this.formUpdateEl.dataset.trIndex;
 
 			let tr = this.tableEl.rows[index];
 
-			tr.dataset.user = JSON.stringify(values);
+			let userOld = JSON.parse(tr.dataset.user);
 
-			tr.innerHTML = `
-	            <td><img src="${values.photo}" alt="User Image" class="img-circle img-sm"></td>
-	            <td>${values.name}</td>
-	            <td>${values.email}</td>
-	            <td>${(values.admin)? 'Sim' : 'Não'}</td>
-	            <td>${Utils.dateFormat(values.register)}</td>
-	            <td>
-	                <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-	                <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-	            </td>`;
-	        this.addEventsTR(tr);
-	        this.updateCount();
+			let result = Objetct.assign({}, userOld, values); // substitui values por userold, e uservold ao novo em branco{}
+
+	        this.getPhoto(this.formUpdateEl).then((content)=>{//Se der certo
+				if(!values.photo) {
+					result._photo = userOld._photo;
+				}else{
+					result._photo = content;
+				}
+				let user = new User();
+
+				user.loadFromJSON(result);
+
+				user.save();
+
+				this.getTr(user, tr);
+
+				this.updateCount();
+	        
+				this.formUpdateEl.reset(); // Reseta o formulário
+				btn.disabled = false; //Habilita o botão de salvar
+
+	        	this.showPanelCreate();
+			}, (e)=>{//Se der errado
+				console.error(e);
+			});
 		});
 	}
 
 	onSubmit(){		
+		
 		this.formEl.addEventListener("submit", event =>{			
+			
 			event.preventDefault();		
+			
 			let btn = this.formEl.querySelector("[type=submit]");
+			
 			btn.disabled = true;// Desabilita o botão de salvar
+			
 			let values = this.getValues(this.formEl);
+			
 			if(!values) return false;
-			this.getPhoto().then((content)=>{//Se der certo
+			
+			this.getPhoto(this.formEl).then((content)=>{//Se der certo
 				values.photo = content;
-				this.addLine(this.getValues(this.formEl));
+				
+				values.save();
+
+				this.addLine(values);
+				
 				this.formEl.reset(); // Reseta o formulário
+				
 				btn.disabled = false; //Habilita o botão de salvar
 			}, (e)=>{//Se der errado
 				console.error(e);
 			});		
+
 		});
+
 	}
 
-	getPhoto(){
+	getPhoto(formEl){
 		return new Promise((resolve, reject)=>{
 			let fileReader = new FileReader();
-			let elements = [...this.formEl.elements].filter(item=>{
+			let elements = [...formEl.elements].filter(item=>{
 				if (item.name === 'photo') {
 					return item;
 				}
@@ -118,10 +148,32 @@ class UserController{
 			user.admin
 		);		
 	}
-
-	addLine(dataUser){
 		
-		let tr = document.createElement('tr');
+	selectAll(){
+		let users = User.getUsersStorage();
+
+		users.forEach(dataUser=>{
+			let user = new User();
+			user.loadFromJSON(dataUser);
+			this.addLine(user);
+		});
+	}
+	
+	//Adiciona uma linha na tabela
+	addLine(dataUser){		
+		
+		let tr = this.getTr(dataUser);
+		
+		this.tableEl.appendChild(tr);
+
+		this.updateCount();
+
+	}
+
+	//Este método apenas faz a criação de uma unica tr, e retorna a tr quando é usado
+	getTr(dataUser, tr = null){
+		
+		if(tr === null) tr = document.createElement('tr');
 
 		tr.dataset.user = JSON.stringify(dataUser);
 
@@ -133,33 +185,48 @@ class UserController{
 	        <td>${Utils.dateFormat(dataUser.register)}</td>
 	        <td>
 	            <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-	            <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-	        </td>`;		
-	    
-		this.addEventsTR(tr);
+	            <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
+	        </td>`;	
+	    this.addEventsTR(tr);
 
-		this.tableEl.appendChild(tr);
-
-		this.updateCount();
+	    return tr;
 	}
 
 	addEventsTR(tr){
 		
+		tr.querySelector(".btn-delete").addEventListener("click",e =>{
+			
+			if(confirm("Deseja realmente excluir?")){
+				
+				let user = new User();
+
+				user.loadFromJSON(JSON.parse(tr.dataset.user));
+
+				user.remove();
+
+				tr.remove();
+
+				this.updateCount();
+			}
+
+		});
+
 		//Esta rotina adiciona ao formulário de edição os dados que já estão no json, distribuidos nos respectivos campos com o for in
 	    tr.querySelector(".btn-edit").addEventListener("click",e =>{
 
 	    	let json = JSON.parse(tr.dataset.user);
-	    	let form = document.querySelector("#form-user-update");
-	    	form.dataset.trIndex = tr.sectionRowIndex;
+
+	    	this.formUpdateEl.trIndex = tr.sectionRowIndex;
+
 	    	for(let name in json){ // Para cada linha que passar no json
-	    		let field = form.querySelector("[name="+name.replace("_","")+"]");	    		
+	    		let field = this.formUpdateEl.querySelector("[name="+name.replace("_","")+"]");	    		
 	    		if(field){	    			
 	    			switch(field.type){
 	    				case 'file':
 	    					continue;// Se for um tipo de arquivo, continua pois não puxa do json
 	    					break;
 	    				case 'radio':
-	    					field = form.querySelector("[name="+name.replace("_","")+"][value="+json[name]+"]");
+	    					field = this.formUpdateEl.querySelector("[name="+name.replace("_","")+"][value="+json[name]+"]");
 	    					field.checked = true;
 	    					break;
 	    				case 'checkbox':
@@ -167,10 +234,10 @@ class UserController{
 	    					break;
 	    				default:
 	    					field.value = json[name];
-	    			}
-	    			
+	    			}	    			
 	    		}	    		
 	    	}
+	    	this.formUpdateEl.querySelector(".photo").src = json.photo;
 	    	this.showPanelUpdate();
 
 	    });
