@@ -4,6 +4,7 @@ class User{
 	constructor(name, gender, birth, country, email, password, photo, admin){
 
 		//Atributos internos da classe User
+		this._id;
 		this._name = name;
 		this._gender = gender;
 		this._birth = birth;
@@ -13,6 +14,10 @@ class User{
 		this._photo = photo;
 		this._admin = admin;
 		this._register = new Date();//Data de Registro
+	}
+
+	get id(){
+		return this._id;
 	}
 
 	get register(){
@@ -55,7 +60,84 @@ class User{
 		this._photo = value;
 	}
 
+	loadFromJSON(json){
 
+		for(let name in json){
+			
+			switch(name){
 
+				case '_register':
+					this[name] = new Date(json[name]);
+					break;
+				default:
+					this[name] = json[name];
+
+			}			
+		}
+	}
+
+	getNewID(){
+
+		let usersID = parseInt(localStorage.getItem("usersID"));
+
+		if(!usersID > 0) usersID = 0;
+
+		usersID++;
+
+		localStorage.setItem("usersID", usersID);
+
+		return usersID;
+	}
+
+	save(){
+
+		let users = User.getUsersStorage();
+		
+		if(this.id > 0){
+
+			users.map(u=>{
+				if(u._id == this.id){
+					Object.assign(u, this);
+				}
+				return u;
+			});
+
+		}else{
+
+			this._id = this.getNewID();
+
+			users.push(this);//Adiciona mais um item
+
+		}
+
+		localStorage.setItem("users",JSON.stringify(users)); //Converte o array para string e insere no localStorage
+}
+
+	//Somente recupera os dados do SessionStorage 
+	static getUsersStorage(){
+		let users = []; //Vetor inicia vazio
+
+		if(localStorage.getItem("users")){ //verifica se o session possui dados
+
+			users = JSON.parse(localStorage.getItem("users")); // se houver já inclui no vetor
+
+		}
+		return users;
+	}
+
+	remove(){
+
+		let users = User.getUsersStorage();
+		
+		users.forEach((userData, index)=>{
+
+			if(this._id == userData._id){
+				users.splice(index, 1);
+			}
+
+		});
+
+		localStorage.setItem("users",JSON.stringify(users));
+	}
 
 }
