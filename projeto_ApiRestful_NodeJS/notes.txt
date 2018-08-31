@@ -1,0 +1,863 @@
+N16----------------------------
+//Validação de dados com o modulo Express-validator, com o comando:
+
+- npm install express-validator --save
+
+--------users.js/routes
+
+let NeDB = require('nedb');
+let db = new NeDB({
+	filename: 'users.db',//comando para criar o arquivo
+	autoload:true//Sempre perguntar se existe o arquivo, se existir sempre carrega-lo 
+});
+
+
+module.exports = (app)=>{
+	
+	let route = app.route('/users');
+
+	route.get((req, res)=>{
+
+		db.find({}).sort({name:1}).exec((err, users)=>{
+
+			if(err){
+				app.utils.error.send(err, req, res);
+			}else{
+
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+				res.json({
+					users
+				});		
+
+			}
+
+		})
+
+	});
+
+	route.post((req,res)=>{
+
+		//validaçoes de dados
+		if(!app.utils.validator.user(app, req, res)) return false;
+
+		//Comando para inserir dados
+		db.insert(req.body, (err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(user);
+			}
+
+		});
+
+	});
+
+	//Para consultar apenas um ID
+	let routeId = app.route('/users/:id');
+
+	routeId.get((req, res)=>{
+
+		db.findOne({_id:req.params.id}).exec((err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(user);
+			}
+		});
+
+	});
+
+	//Para editar dados
+	routeId.put((req, res)=>{
+
+		//validaçoes de dados
+		if(!app.utils.validator.user(app, req, res)) return false;
+
+		db.update({_id:req.params.id}, req.body, err=>{ //os dados passados para edição, estão contidos em req.body
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(Object.assign(req.params, req.body));
+			}
+		});
+
+	});
+
+	//Para excluir dados
+	routeId.delete((req, res)=>{
+
+		db.remove({_id:req.params.id}, {}, err=>{ //os dados passados para edição, estão contidos em req.body
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(req.params);
+			}
+		});
+
+	});
+
+};
+
+--------novo arquivo validator.js/utils
+module.exports = {
+
+	user:(app, req, res)=>{
+		//validaçoes de dados
+		req.assert('name','O nome é obrigatório.').notEmpty();
+		req.assert('email','O email esta inválido').notEmpty().isEmail();
+
+		let errors = req.validationErrors();
+
+		if(errors) {
+			app.utils.error.send(errors, req, res);
+			return false;
+		}else{
+			return true;
+		}
+	}
+
+}
+
+
+N15----------------------------
+//Excluir dados
+let NeDB = require('nedb');
+let db = new NeDB({
+	filename: 'users.db',//comando para criar o arquivo
+	autoload:true//Sempre perguntar se existe o arquivo, se existir sempre carrega-lo 
+});
+
+
+module.exports = (app)=>{
+	
+	let route = app.route('/users');
+
+	route.get((req, res)=>{
+
+		db.find({}).sort({name:1}).exec((err, users)=>{
+
+			if(err){
+				app.utils.error.send(err, req, res);
+			}else{
+
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+				res.json({
+					users
+				});		
+
+			}
+
+		})
+
+	});
+
+	route.post((req,res)=>{
+
+		//Comando para inserir dados
+		db.insert(req.body, (err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(user);
+			}
+
+		});
+
+	});
+
+
+	//Para consultar apenas um ID
+	let routeId = app.route('/users/:id');
+
+	routeId.get((req, res)=>{
+
+		db.findOne({_id:req.params.id}).exec((err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(user);
+			}
+		});
+
+	});
+
+	//Para editar dados
+	routeId.put((req, res)=>{
+
+		db.update({_id:req.params.id}, req.body, err=>{ //os dados passados para edição, estão contidos em req.body
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(Object.assign(req.params, req.body));
+			}
+		});
+
+	});
+
+	//Para excluir dados
+	routeId.delete((req, res)=>{
+
+		db.remove({_id:req.params.id}, {}, err=>{ //os dados passados para edição, estão contidos em req.body
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(req.params);
+			}
+		});
+
+	});
+
+};
+
+
+N14----------------------------
+//Edição e usuário
+let NeDB = require('nedb');
+let db = new NeDB({
+	filename: 'users.db',//comando para criar o arquivo
+	autoload:true//Sempre perguntar se existe o arquivo, se existir sempre carrega-lo 
+});
+
+
+module.exports = (app)=>{
+	
+	let route = app.route('/users');
+
+	route.get((req, res)=>{
+
+		db.find({}).sort({name:1}).exec((err, users)=>{
+
+			if(err){
+				app.utils.error.send(err, req, res);
+			}else{
+
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+				res.json({
+					users
+				});		
+
+			}
+
+		})
+
+	});
+
+	route.post((req,res)=>{
+
+		//Comando para inserir dados
+		db.insert(req.body, (err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(user);
+			}
+
+		});
+
+	});
+
+
+	//Para consultar apenas um ID
+	let routeId = app.route('/users/:id');
+
+	routeId.get((req, res)=>{
+
+		db.findOne({_id:req.params.id}).exec((err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(user);
+			}
+		});
+
+	});
+
+	//Para editar dados
+
+	routeId.put((req, res)=>{
+
+		db.update({_id:req.params.id}, req.body, err=>{ //os dados passados para edição, estão contidos em req.body
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(Object.assign(req.params, req.body));
+			}
+		});
+
+	});
+
+
+};
+
+
+N13----------------------------
+//Consultar apenas um único registro pelo ID
+
+let NeDB = require('nedb');
+let db = new NeDB({
+	filename: 'users.db',//comando para criar o arquivo
+	autoload:true//Sempre perguntar se existe o arquivo, se existir sempre carrega-lo 
+});
+
+
+module.exports = (app)=>{
+	
+	let route = app.route('/users');
+
+	route.get((req, res)=>{
+
+		db.find({}).sort({name:1}).exec((err, users)=>{
+
+			if(err){
+				app.utils.error.send(err, req, res);
+			}else{
+
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+				res.json({
+					users
+				});		
+
+			}
+
+		})
+
+	});
+
+	route.post((req,res)=>{
+
+		//Comando para inserir dados
+		db.insert(req.body, (err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(user);
+			}
+
+		});
+
+	});
+
+
+	//Para consutlar apenas um ID
+	let routeId = app.route('/users/:id');
+
+	routeId.get((req, res)=>{
+
+		db.findOne({_id:req.params.id}).exec((err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(user);
+			}
+		});
+
+	});
+
+
+};
+
+
+N12----------------------------
+//Refator sistema e otimizando código
+
+------users.js/nodeJS
+
+let NeDB = require('nedb');
+let db = new NeDB({
+	filename: 'users.db',//comando para criar o arquivo
+	autoload:true//Sempre perguntar se existe o arquivo, se existir sempre carrega-lo 
+});
+
+
+module.exports = (app)=>{
+	
+	let route = app.route('/users');
+
+	route.get((req, res)=>{
+
+		db.find({}).sort({name:1}).exec((err, users)=>{
+
+			if(err){
+				app.utils.error.send(err, req, res);
+			}else{
+
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+				res.json({
+					users
+				});		
+
+			}
+
+		})
+
+	});
+
+	route.post((req,res)=>{
+
+		//Comando para inserir dados
+		db.insert(req.body, (err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(user);
+			}
+
+		});
+
+	});
+
+};
+
+------novo arquivo error.js/utils
+
+module.exports = {
+
+	send:(err, req, res, code = 400)=>{
+		console.log(`error: ${err}`);
+		res.status(code).json({
+				error:err
+		});
+	}
+
+};
+
+
+N11----------------------------
+//Listar dados cadastrados do banco NeDB
+
+//alterado somente users.js - nodeJS
+let NeDB = require('nedb');
+let db = new NeDB({
+	filename: 'users.db',//comando para criar o arquivo
+	autoload:true//Sempre perguntar se existe o arquivo, se existir sempre carrega-lo 
+});
+
+
+module.exports = (app)=>{
+	
+	app.get('/users',(req, res)=>{
+
+		db.find({}).sort({name:1}).exec((err, users)=>{
+
+			if(err){
+				console.log(`error:${err}`);
+				res.status(400).json({
+					error:err
+				});
+			}else{
+
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+				res.json({
+					users
+				});		
+
+			}
+
+		})
+
+	});
+
+	app.post('/users', (req,res)=>{
+
+		//Comando para inserir dados
+		db.insert(req.body, (err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				app.utils.error.send(err, req, res);
+			}else{
+				res.status(200).json(user);
+			}
+
+		});
+
+	});
+
+};
+
+
+
+N10----------------------------
+//Persistencia de dados com NeDB
+
+Para instalar o NeDB
+- npm install nedb --save
+
+Somente alterou o users.js - nodejs
+
+let NeDB = require('nedb');
+let db = new NeDB({
+	filename: 'users.db',//comando para criar o arquivo
+	autoload:true//Sempre perguntar se existe o arquivo, se existir sempre carrega-lo 
+});
+
+
+module.exports = (app)=>{
+	
+	app.get('/users',(req, res)=>{
+
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+		res.json({
+			users:[{
+				name:'Lucas',
+				email:'l@l.com',
+				id:1
+			}]
+		});		
+
+	});
+
+	app.post('/users', (req,res)=>{
+
+		//Comando para inserir dados
+		db.insert(req.body, (err, user)=>{
+			if(err){//Caso ocorrer algum erro ao salvar
+				console.log(`error: ${err}`);
+				res.status(400).json({
+					error:err
+				});
+			}else{
+				res.status(200).json(user);
+			}
+
+		});
+
+	});
+
+};
+
+
+N09----------------------------
+//Receber dados via POST
+
+Comando para implementar ao Express, especialmente para o método POST quando há envio de dados, isto é o body-parse para este conseguir enteder dados, é o bodyParser
+
+-npm install body-parser --save
+
+--- index.js 
+
+const express = require('express');
+const consign = require('consign');
+const bodyParse = require('body-parser');
+
+let app = express();
+
+//Implementando que esta sera convertido todos os dados para JSON recebidos via POST
+app.use(bodyParse.urlencoded({extended: false})); 
+app.use(bodyParse.json()); 
+//----------------------------
+
+consign().include('routes').into(app); //Estou dizendo para o consig incluir as rotas de 'routes' para a variável app
+
+app.listen(3000, '127.0.0.1', ()=>{
+
+	console.log("Servidor Rodando!");
+
+});
+
+--- users.js - nodeJS
+
+module.exports = (app)=>{
+	
+	app.get('/users',(req, res)=>{
+
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+		res.json({
+			users:[{
+				name:'Lucas',
+				email:'l@l.com',
+				id:1
+			}]
+		});		
+
+	});
+
+	app.post('/users', (req,res)=>{
+
+		res.json(req.body);	
+
+	});
+
+};
+
+--- index.js - nodeJS
+module.exports = (app)=>{
+
+	app.get('/',(req, res)=>{
+
+		res.statusCode = 200; 
+		res.setHeader('Content-Type', 'text/html'); //Setando o cabeçalho da aplicação com html
+		res.end('<h1>Olá</h1>');
+
+	});
+
+};
+
+
+N08----------------------------
+//Carregar rotas com Consign
+
+Comando para instalar o Consign
+
+-npm install consign --save
+
+-----index
+
+const express = require('express');
+const consign = require('consign');
+
+let app = express();
+
+consign().include('routes').into(app); //Estou dizendo para o consig incluir as rotas da pasta 'routes' para a variável app
+
+app.listen(3000, '127.0.0.1', ()=>{
+
+	console.log("Servidor Rodando!");
+
+});
+
+-----users - nodeJS
+
+module.exports = (app)=>{
+	
+	app.get('/users',(req, res)=>{
+
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+		res.json({
+			users:[{
+				name:'Lucas',
+				email:'l@l.com',
+				id:1
+			}]
+		});		
+
+	});
+
+	app.get('/users/admin', (req,res)=>{
+
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+		res.json({
+			users:[]
+		});	
+
+	});
+
+};
+
+-----index - nodeJS
+module.exports = (app)=>{
+
+	app.get('/',(req, res)=>{
+
+		res.statusCode = 200; 
+		res.setHeader('Content-Type', 'text/html'); //Setando o cabeçalho da aplicação com html
+		res.end('<h1>Olá</h1>');
+
+	});
+
+};
+
+N07----------------------------
+//Separando Rotas no arquivo Principal
+
+Boa prática criar um arquivo para cada rota
+
+----index
+const express = require('express');
+
+let routesIndex = require('./routes/index'); //requerindo o arquivo index do routes
+let routesUsers = require('./routes/users'); //requerindo o arquivo index do routes
+
+let app = express();
+
+app.use(routesIndex); //Indicando que o app faz uso destas variáveis
+app.use('/users',routesUsers);
+
+app.listen(3000, '127.0.0.1', ()=>{
+
+	console.log("Servidor Rodando!");
+
+});
+
+----users.js/routes
+
+let express = require('express');
+let routes = express.Router();//Uso de Rotas
+
+routes.get('/',(req, res)=>{
+
+	res.statusCode = 200;
+	res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+	res.json({
+		users:[{
+			name:'Lucas',
+			email:'l@l.com',
+			id:1
+		}]
+	});		
+
+});
+
+routes.get('/admin', (req,res)=>{
+
+	res.statusCode = 200;
+	res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+	res.json({
+		users:[]
+	});	
+
+});
+
+module.exports = routes;
+
+----index.js/routes
+
+let express = require('express');
+let routes = express.Router();//Uso de Rotas
+
+routes.get('/',(req, res)=>{
+
+	res.statusCode = 200; 
+	res.setHeader('Content-Type', 'text/html'); //Setando o cabeçalho da aplicação com html
+	res.end('<h1>Olá</h1>');
+
+});
+
+module.exports = routes;
+
+
+N06----------------------------
+//Subir um servidor com o express
+
+-> nodemon automaticamente sobe o serviço ao editar arquivos do projeto, comando: (-g instala de forma global, ou seja, não somente no seu projeto em todos os projetos do NODE do computador)
+
+-npm install nodemon -g 
+
+
+const express = require('express');
+
+let app = express();
+
+app.get('/',(req, res)=>{
+
+	res.statusCode = 200; 
+	res.setHeader('Content-Type', 'text/html'); //Setando o cabeçalho da aplicação com html
+	res.end('<h1>Olá</h1>');
+
+});
+
+app.get('/users',(req, res)=>{
+
+	res.statusCode = 200;
+	res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+	res.json({
+		users:[{
+			name:'Lucas',
+			email:'l@l.com',
+			id:1
+		}]
+	});		
+
+});
+
+app.listen(3000, '127.0.0.1', ()=>{
+
+	console.log("Servidor Rodando!");
+
+});
+
+
+
+
+N05----------------------------
+// Instalar o Express NODEJS
+
+npm -> gerenciador de módulos do NodeJS
+
+package.json -> é o ponto de partida do projeto , indicamos quais dependencias e módulos o projeto utilizará, onde toda a configuração que o projeto for necessitar, é neste arquivo que esta informação irá ficar localizada. Não é necessário levar toda a pasta node-modules, somente iniciar o bash do windows e executar o 'npm install' onde este arquivo estiver, que assim todos os módulos dependentes serão instalados automaticamente sem a necessidade de fazer um por vez. 
+
+para inicializar o package.json, usar comando:
+
+- npm init 
+
+preencher o wizard de instalação
+
+Comando para instalar o Express, e deixar como dependencia no Package.json (--save)
+
+- npm install express --save
+
+
+N04----------------------------
+//Detectando URL diferente
+
+const http = require('http');
+
+let server = http.createServer((req, res)=>{
+
+	console.log('URL :', req.url);; //Mostrar a URL
+	console.log('Method :', req.method);; //Mostrarqual foi o método solicitado
+	
+	switch(req.url){
+		case '/':
+			res.statusCode = 200; 
+			res.setHeader('Content-Type', 'text/html'); //Setando o cabeçalho da aplicação com html
+			res.end('<h1>Olá</h1>');
+		break;
+		case '/users':
+			res.statusCode = 200;
+			res.setHeader('Content-Type', 'application/json');//Indicando o retorno de arquivos json
+			res.end(JSON.stringify({
+				users:[{
+					name:'Lucas',
+					email:'l@l.com',
+					id:1
+				}]
+			}));		
+		break;		
+	}
+
+});
+
+server.listen(3000, '127.0.0.1', ()=>{
+
+	console.log("Servidor Rodando!");
+
+});
+
+
+
+
+N03----------------------------
+
+//Simples servidor http rodando
+
+const http = require('http');
+
+let server = http.createServer((req, res)=>{
+
+	console.log('URL :', req.url);;
+	console.log('Method :', req.method);;
+	
+	res.end('OK ');
+
+});
+
+server.listen(3000, '127.0.0.1', ()=>{
+
+	console.log("Servidor Rodando!");
+
+});
+
+N02----------------------------
+Instalação NodeJS
+
+N01----------------------------
+Conceitos NodeJS
