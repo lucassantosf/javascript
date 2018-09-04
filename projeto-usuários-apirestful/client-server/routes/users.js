@@ -52,9 +52,10 @@ router.delete('/:id', function(req, res, next) {
 
 });
 
+// Post new users
 router.post('/', function(req, res, next) {
   
-	client.post(`/users/${req.params.id}`, req.body, function(err, request, response, obj) {
+	client.post(`/users/`, req.body, function(err, request, response, obj) {
 		assert.ifError(err);
 
 	  	res.json(obj);

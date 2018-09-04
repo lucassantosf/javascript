@@ -52,18 +52,20 @@ class UserController{
 
 					user.loadFromJSON(result);
 
-					user.save();
+					user.save().then(user=>{
+						
+						this.getTr(user, tr);
 
-					this.getTr(user, tr);
+				    	this.updateCount();
 
-			    	this.updateCount();
+						this.formUpdateEl.reset();//Limpar o formulário
 
-					this.formUpdateEl.reset();//Limpar o formulário
+						btn.disabled = false;
 
-					btn.disabled = false;
+						this.showPanelCreate(); 
 
-					this.showPanelCreate(); 
-						    		
+					});
+	    		
 				}, 
 				(e)=>{
 					//Função de quando der erro
@@ -93,13 +95,15 @@ class UserController{
 					//Função de quando der sucesso
 					values.photo = content;
 					
-					values.save();
+					values.save().then(user=>{
 
-					this.addLine(values);//Adicionar os dados do usuário em uma nova 'linha' da tabela
+						this.addLine(user);//Adicionar os dados do usuário em uma nova 'linha' da tabela
 
-					this.formEl.reset();//Limpar o formulário
+						this.formEl.reset();//Limpar o formulário
 
-					btn.disabled = false;			
+						btn.disabled = false;
+					});			
+
 				}, 
 				(e)=>{
 					//Função de quando der erro
@@ -201,7 +205,7 @@ class UserController{
 
 	selectAll(){
 
-		HttpRequest.get('/users').then(data=>{
+		User.getUsersStorage().then(data=>{
 
 			data.users.forEach(dataUser=>{
 
@@ -267,10 +271,12 @@ class UserController{
 
 	    		user.loadFromJSON(JSON.parse(tr.dataset.user));
 
-				user.remove();	    		
-	    		//Remove o item da tr que esta neste método
-	    		tr.remove();
-	    		this.updateCount();
+				user.remove().then(data=>{
+					//Remove o item da tr que esta neste método
+		    		tr.remove();
+		    		this.updateCount();
+				});	    		
+	    		
 	    	}
 
 		});

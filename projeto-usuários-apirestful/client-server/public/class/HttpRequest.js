@@ -32,8 +32,10 @@ class HttpRequest{
 
 			ajax.open(method.toUpperCase(),url);
 
-			ajax.onerror = event =>{
+			ajax.onerror = event => {
+
 				reject(e);
+
 			}
 
 			ajax.onload = event => {
@@ -45,14 +47,19 @@ class HttpRequest{
 					obj = JSON.parse(ajax.responseText);
 
 				}catch(e){
+					
 					reject(e);
+					
 					console.error(e);
+
 				}
 				
 				resolve(obj);
 			};
 
-			ajax.send();
+			ajax.setRequestHeader('Content-Type','application/json');
+			
+			ajax.send(JSON.stringify(params));
 
 		});		
 

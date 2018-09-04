@@ -70,74 +70,65 @@ class User{
 					this[name] = new Date(json[name]);
 					break;
 				default:
-					this[name] = json[name];
+					if(name.substring(0, 1) === '_') this[name] = json[name];
 
 			}			
 		}
 	}
 
-	getNewID(){
+	toJSON(){
 
-		let usersID = parseInt(localStorage.getItem("usersID"));
+		let json = {};
 
-		if(!usersID > 0) usersID = 0;
+		Object.keys(this).forEach(key =>{
 
-		usersID++;
+			if(this[key] !== undefined) json[key] = this[key];
+			
+		});
 
-		localStorage.setItem("usersID", usersID);
-
-		return usersID;
+		return json;
 	}
 
 	save(){
 
-		let users = User.getUsersStorage();
-		
-		if(this.id > 0){
+		return new Promise((resolve, reject)=>{
 
-			users.map(u=>{
-				if(u._id == this.id){
-					Object.assign(u, this);
-				}
-				return u;
+			let promise;
+
+			if(this.id){
+				
+				promise = Fetch.put(`/users/${this.id}`, this.toJSON());
+			
+			}else{
+
+				promise = Fetch.post(`/users`, this.toJSON());
+
+			}
+
+			promise.then(data=>{
+
+				this.loadFromJSON(data);
+
+				resolve(this);
+			}).catch(e=>{
+				reject(e);
 			});
 
-		}else{
+		});		
 
-			this._id = this.getNewID();
-
-			users.push(this);//Adiciona mais um item
-
-		}
-
-		localStorage.setItem("users",JSON.stringify(users)); //Converte o array para string e insere no localStorage
-}
+	}
 
 	//Somente recupera os dados do SessionStorage 
 	static getUsersStorage(){
-		let users = []; //Vetor inicia vazio
+		
+		return Fetch.get('/users');
 
-		if(localStorage.getItem("users")){ //verifica se o session possui dados
-
-			users = JSON.parse(localStorage.getItem("users")); // se houver já inclui no vetor
-
-		}
-		return users;
 	}
 
 	remove(){
 
-		let users = User.getUsersStorage();
-		
-		users.forEach((userData, index)=>{
+		return Fetch.delete(`/users/${this.id}`);
 
-			if(this._id == userData._id){
-				users.splice(index, 1);
-			}
-
-		});
-
-		localStorage.setItem("users",JSON.stringify(users));
 	}
 
 }
