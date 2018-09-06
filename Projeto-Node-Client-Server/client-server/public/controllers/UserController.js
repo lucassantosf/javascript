@@ -52,17 +52,19 @@ class UserController{
 
 					user.loadFromJSON(result);
 
-					user.save();
+					user.save().then(user=>{
+						
+						this.getTr(user, tr);
 
-					this.getTr(user, tr);
+				    	this.updateCount();
 
-			    	this.updateCount();
+						this.formUpdateEl.reset();//Limpar o formulário
 
-					this.formUpdateEl.reset();//Limpar o formulário
+						btn.disabled = false;
 
-					btn.disabled = false;
-
-					this.showPanelCreate(); 
+						this.showPanelCreate(); 
+					
+					});				
 						    		
 				}, 
 				(e)=>{
@@ -93,13 +95,16 @@ class UserController{
 					//Função de quando der sucesso
 					values.photo = content;
 					
-					values.save();
+					values.save().then(user=>{
 
-					this.addLine(values);//Adicionar os dados do usuário em uma nova 'linha' da tabela
+						this.addLine(user);//Adicionar os dados do usuário em uma nova 'linha' da tabela
 
-					this.formEl.reset();//Limpar o formulário
+						this.formEl.reset();//Limpar o formulário
 
-					btn.disabled = false;			
+						btn.disabled = false;
+					});
+
+								
 				}, 
 				(e)=>{
 					//Função de quando der erro
@@ -201,22 +206,9 @@ class UserController{
 
 	selectAll(){
 
-		//let users = User.getUsersStorage();
-		let ajax = new XMLHttpRequest();
+		User.getUsersStorage().then(data=>{
 
-		ajax.open('GET', '/users');
-
-		ajax.onload = event =>{
-
-			let obj = { users: []};
-
-			try{
-				obj = JSON.parse(ajax.responseText);
-			}catch(e){
-				console.error(e);
-			}
-
-			obj.users.forEach(dataUser=>{
+			data.users.forEach(dataUser=>{
 
 				let user = new User();
 
@@ -225,10 +217,8 @@ class UserController{
 				this.addLine(user);
 			});
 
-		};	
+		});
 
-		ajax.send();
-		
 	}
 
 	//Este método tem função de "adicionar" uma linha na tabela de usuários, recebe como argumento os dados do usuário
@@ -282,10 +272,12 @@ class UserController{
 
 	    		user.loadFromJSON(JSON.parse(tr.dataset.user));
 
-				user.remove();	    		
-	    		//Remove o item da tr que esta neste método
-	    		tr.remove();
-	    		this.updateCount();
+				user.remove().then(data=>{
+					//Remove o item da tr que esta neste método
+		    		tr.remove();
+		    		this.updateCount();
+				});	    		
+	    		
 	    	}
 
 		});
