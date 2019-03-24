@@ -10,13 +10,28 @@ export class WhatsAppController{
 
 		console.log('WhatsAppController OK');
 
+		this._firebase = new Firebase();
+
+		this.initAuth();
+
 		this.elementsPrototype();
 
 		this.loadElements();
 
 		this.initEvents();
 
-		this._firebase = new Firebase();
+	}
+
+	initAuth(){
+
+		this._firebase.initAuth()
+			.then(response=>{
+				this._user = response.user;
+				this.el.appContent.css({display:'flex'});
+			})
+			.catch(err=>{
+				console.error(err);
+			});
 	}
 
 	loadElements(){
@@ -139,8 +154,7 @@ export class WhatsAppController{
 
 		this.el.contactsMessagesList.querySelectorAll('.contact-item').forEach(item=>{
 			
-			item.on('click',e=>{
-					
+			item.on('click',e=>{					
 				this.el.home.hide();
 				this.el.main.css({
 					display:'flex'
@@ -153,7 +167,6 @@ export class WhatsAppController{
 			
 			e.stopPropagation();
 			this.el.menuAttach.addClass('open');
-
 			document.addEventListener('click',this.closeMenuAttach.bind(this));
 
 		});
@@ -230,7 +243,7 @@ export class WhatsAppController{
 			this.closeAllMainPanel();
 			this.el.panelDocumentPreview.addClass('open');
 			this.el.panelDocumentPreview.css({
-				'height':'calc(100% - 120px)'
+				'height':'calc(100% - 50px)'
 			});
 			this.el.inputDocument.click();
 
@@ -254,13 +267,13 @@ export class WhatsAppController{
 					this.el.filePanelDocumentPreview.hide();
 
 					this.el.panelDocumentPreview.css({
-						'height':'calc(100% - 120px)'
+						'height':'calc(100% - 50px)'
 					});
 
 				}).catch(err=>{
 					
 					this.el.panelDocumentPreview.css({
-						'height':'calc(100% - 120px)'
+						'height':'calc(100% - 50px)'
 					});
 					
 					switch(file.type){
