@@ -10,7 +10,7 @@ export class Firebase{
 		    authDomain: "whatsappcurso-61b43.firebaseapp.com",
 		    databaseURL: "https://whatsappcurso-61b43.firebaseio.com",
 		    projectId: "whatsappcurso-61b43",
-		    storageBucket: "whatsappcurso-61b43.appspot.com",
+		    storageBucket: "gs://whatsappcurso-61b43.appspot.com",
 		    messagingSenderId: "644710644800"
 		};
 		this.init();
