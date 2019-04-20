@@ -1,0 +1,98 @@
+[debug] [2019-04-20T13:16:37.111Z] ----------------------------------------------------------------------
+[debug] [2019-04-20T13:16:37.115Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\lucas\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init functions
+[debug] [2019-04-20T13:16:37.116Z] CLI Version:   6.7.0
+[debug] [2019-04-20T13:16:37.116Z] Platform:      win32
+[debug] [2019-04-20T13:16:37.116Z] Node Version:  v7.4.0
+[debug] [2019-04-20T13:16:37.118Z] Time:          Sat Apr 20 2019 10:16:37 GMT-0300 (Hora oficial do Brasil)
+[debug] [2019-04-20T13:16:37.118Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-04-20T13:16:37.130Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-04-20T13:16:37.131Z] > authorizing via signed-in user
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\xampp\htdocs\javascript\whatsapp
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2019-04-20T13:16:49.954Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2019-04-20T13:16:49.954Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2019-04-20T13:16:52.640Z] <<< HTTP RESPONSE 200
+[debug] [2019-04-20T13:16:52.692Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects?page_size=100  
+ 
+[debug] [2019-04-20T13:16:56.436Z] <<< HTTP RESPONSE 200
+[info] i  Using project fir-app-8054c (FirebaseApp)
+[info] 
+=== Functions Setup
+[info] 
+[info] A functions directory will be created in your project with a Node.js
+[info] package pre-configured. Functions can be deployed with firebase deploy.
+[info] 
+[debug] [2019-04-20T13:22:50.485Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-04-20T13:22:50.487Z] > authorizing via signed-in user
+[debug] [2019-04-20T13:22:50.490Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/fir-app-8054c  
+ 
+[debug] [2019-04-20T13:22:51.767Z] <<< HTTP RESPONSE 200
+[debug] [2019-04-20T13:22:51.772Z] >>> HTTP REQUEST PATCH https://servicemanagement.googleapis.com/v1/services/cloudfunctions.googleapis.com/projectSettings/fir-app-8054c?updateMask=usageSettings  
+
+[debug] [2019-04-20T13:22:51.774Z] >>> HTTP REQUEST PATCH https://servicemanagement.googleapis.com/v1/services/runtimeconfig.googleapis.com/projectSettings/fir-app-8054c?updateMask=usageSettings  
+
+[debug] [2019-04-20T13:22:53.728Z] <<< HTTP RESPONSE 200
+[debug] [2019-04-20T13:22:53.805Z] <<< HTTP RESPONSE 200
+[debug] [2019-04-20T13:24:00.493Z] ----------------------------------------------------------------------
+[debug] [2019-04-20T13:24:00.497Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\lucas\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init functions
+[debug] [2019-04-20T13:24:00.497Z] CLI Version:   6.7.0
+[debug] [2019-04-20T13:24:00.497Z] Platform:      win32
+[debug] [2019-04-20T13:24:00.497Z] Node Version:  v7.4.0
+[debug] [2019-04-20T13:24:00.499Z] Time:          Sat Apr 20 2019 10:24:00 GMT-0300 (Hora oficial do Brasil)
+[debug] [2019-04-20T13:24:00.499Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-04-20T13:24:00.512Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-04-20T13:24:00.512Z] > authorizing via signed-in user
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\xampp\htdocs\javascript\whatsapp
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2019-04-20T13:24:02.867Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects?page_size=100  
+ 
+[debug] [2019-04-20T13:24:04.221Z] <<< HTTP RESPONSE 200
+[info] 
+=== Functions Setup
+[info] 
+[info] A functions directory will be created in your project with a Node.js
+[info] package pre-configured. Functions can be deployed with firebase deploy.
+[info] 
