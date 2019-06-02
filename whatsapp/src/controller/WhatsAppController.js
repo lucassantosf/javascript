@@ -342,9 +342,11 @@ export class WhatsAppController{
 			if(this.el.inputProfilePhoto.files.length > 0){
 				let file = this.el.inputProfilePhoto.files[0];
 				Upload.send(file, this._user.email).then(snapshot=>{
-					this._user.photo = snapshot.downloadURL;
-					this._user.save().then(()=>{
-						this.el.btnClosePanelEditProfile.click();
+					snapshot.ref.getDownloadURL().then(downloadURL => {
+					    this._user.photo = downloadURL;
+					    this._user.save().then(()=>{
+					        this.el.btnClosePanelEditProfile.click();
+					    });        
 					});
 				});
 			}
@@ -613,7 +615,7 @@ export class WhatsAppController{
 			this._contactsController = new ContactsController(this.el.modalContacts,this._user);
 			this._contactsController.on('select',contact=>{
 				Message.sendContact(
-					this._contactActive,
+					this._contactActive.chatId,
 					this._user.email,
 					contact
 				);
