@@ -395,8 +395,11 @@ export class Message extends Model{
 	}	
 
 	static upload(file, from){
-
-		return Upload.send(file,from);
+        return uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+ 
+            s(downloadURL);
+         
+        }); 
 	}
 
 	static sendContact(chatId, from, contact){
@@ -422,50 +425,36 @@ export class Message extends Model{
 		});
 	}
 
-	static sendDocument(chatId, from, file, filePreview, info){
-
-		Message.send(chatId, from, 'document','').then(msgRef =>{
-
-		 	Message.upload(file, from).then(downloadURL=>{
-	    
-	    		let downloadFile = downloadURL;
-
-	    		if(filePreview){
-	    			Message.upload(filePreview, from).then(downloadURL=>{
-	    
-		    		let downloadPreview = downloadURL;
-
-		    		msgRef.set({
-		    			content: downloadFile,
-		    			priview: downloadPreview,
-		    			filename: file.name,
-		    			size: file.size,
-		    			filetype: file.type,
-		    			status: 'sent' ,
-		    			info
-		    		}, {
-		    			merge:true
-		    			});
-		    		});
-	    		}else{
-	    			
-	    			msgRef.set({
-		    			content: downloadFile,
-		    			priview: downloadPreview,
-		    			filename: file.name,
-		    			size: file.size,
-		    			filetype: file.type,
-		    			status: 'sent' 
-		    		}, {
-		    			merge:true
-		    		}); 
-
-	    		}
-	    	
-	    	});
-
-		});		
-	}
+	static sendDocument(chatId, from, file, filePreview) {
+ 
+        Message.send(chatId, from, 'document', '').then(msgRef => {
+     
+            Message.upload(file, from).then(downloadURL => {
+     
+                let downloadFile = downloadURL;
+     
+                Message.upload(filePreview, from).then(downloadURL2 => {
+     
+                    let downloadPreview = downloadURL2;
+     
+                    msgRef.set({
+                        content: downloadFile,
+                        preview: downloadPreview,
+                        filename: file.name,
+                        size: file.size,
+                        fileType: file.type,
+                        status: 'sent'
+                      }, {
+                      merge: true
+                    });
+     
+                });
+     
+            });
+     
+        });
+     
+    }
 
 	static sendImage(chatId, from, file){ 
         
