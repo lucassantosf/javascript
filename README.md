@@ -24,7 +24,7 @@ Para as seguintes pastas, necessário abrir o arquivo index.html raiz:
 <ul>
   <li>/introducao-conceitos - Primeiras aulas do curso, com os conceitos básicos do JS</li>
   <li>/projeto-calculadora-master - Projeto com o desenvolvimento de uma calculadora em JS</li>
-  <li>/projeto-usuarios - Projeto simples para realizar gerencimentos de usuários</li> 
+  <li>/projeto-usuarios - Projeto simples para realizar o gerenciamento de usuários</li> 
 </ul>
 
 
