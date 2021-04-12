@@ -12,7 +12,12 @@ Disponível na [Udemy](https://www.udemy.com/course/javascript-curso-completo/),
 
 Você pode navegar por qualquer pasta e executar o script de inicialização do serviço com o NPM ou somente abrir o arquivo index.html da raiz.
 
-Para as seguintes pastas, necessário navegar até a pasta e executar o comando "npm run start"
+Para as seguintes pastas, necessário navegar até a pasta e executar os comandos
+
+- "npm install"
+
+- "npm run start"
+
 <ul>
   <li>/Projeto-Node-Client-Server - Projeto simples para aprendizado em node.js</li>
   <li>/dropbox - Projeto clone do Dropbox</li>
