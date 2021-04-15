@@ -4,7 +4,9 @@ class Postgres extends ICrud{
     constructor(){
         super()
     }
-
+    isConnected(){
+        
+    }
     create(item){
         console.log('salvo postgres')
     }
