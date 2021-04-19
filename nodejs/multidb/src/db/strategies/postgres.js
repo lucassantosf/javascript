@@ -5,8 +5,7 @@ class Postgres extends ICrud{
     constructor(){
         super()
         this._driver = null
-        this._herois = null
-        this._connect()
+        this._herois = null 
     }
     async isConnected(){
         try {
@@ -18,7 +17,7 @@ class Postgres extends ICrud{
         }
     }
     async defineModel(){
-        this._herois = driver.define('heroes',{
+        this._herois = this._driver.define('heroes',{
             id:{
                 type: Sequelize.INTEGER,
                 require: true,
@@ -38,9 +37,13 @@ class Postgres extends ICrud{
             freezeTableName: false,
             timestamps: false
         })
-        await Herois.sync()
+        await this._herois.sync()
     }
-    _connect(){
+    async create(item){
+        const { dataValues } = this._herois.create(item)
+        return dataValues
+    }
+    async connect(){
         this._driver = new Sequelize(
             'heroes',
             'lucas',
@@ -51,6 +54,7 @@ class Postgres extends ICrud{
                 operatorsAliases: false
             }
         )
+        await this.defineModel()
     }
     create(item){
         console.log('salvo postgres')
