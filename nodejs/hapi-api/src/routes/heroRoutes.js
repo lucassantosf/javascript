@@ -15,7 +15,10 @@ class HeroRoutes extends BaseRoute{
         return {
             path: '/herois',
             method: 'GET',
-            // config:{
+            config:{
+                tags: ['api'],
+                description: 'Deve listar herois',
+                notes: 'Pode paginar resultados e filtrar por nome'
             //     validate:{
             //         failAction,
             //         query:{
@@ -24,7 +27,7 @@ class HeroRoutes extends BaseRoute{
             //             nome: Joi.string().min(3).max(100)
             //         }
             //     }
-            // },
+            },
             handler: (request,headers)=>{
                 try {
 
@@ -44,15 +47,18 @@ class HeroRoutes extends BaseRoute{
         return {
             path: '/herois',
             method: 'POST',
-            // config: {
-            //     validate:{
+            config: {
+                tags: ['api'],
+                description: 'Deve cadastrar um heroi',
+                notes: 'Pode cadastrar por nome e poder'
+            // validate:{
             //         failAction,
             //         payload:{
             //             nome: Joi.string().required().min(3).max(100),
             //             poder: Joi.string().required().min(2).max(100), 
             //         }
             //     }
-            // },
+            },
             handler:async (request)=>{ 
                 try{
                     const {nome,poder} = request.payload
@@ -73,6 +79,11 @@ class HeroRoutes extends BaseRoute{
         return {
             path: '/herois/{id}',
             method: 'PATCH',
+            config:{
+                tags: ['api'],
+                description: 'Deve atualizar um heroi por id',
+                notes: 'Pode atualizar qualquer campo'
+            },
             // config:{
             //     validate:{
             //         params:{
@@ -114,6 +125,9 @@ class HeroRoutes extends BaseRoute{
             path: '/herois/{id}',
             method: 'DELETE',
             config:{
+                tags: ['api'],
+                description: 'Deve deletar um heroi',
+                notes: 'Pode deletar qualquer heroi',
                 validate:{
                     failAction,
                     params:{
