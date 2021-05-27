@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom' 
-import { connect } from 'react-redux'
-import { deletePost } from '../actions'
+import { Link } from 'react-router-dom'
+import api from '../api' 
 
-const renderPosts = (posts,props) => { 
-    const handleDelete = async(posts,id)=>{
-        props.deletePost(posts,id)
-    }
+const fetchPosts = (props) => {
+    props.fetchPosts()
+}
+
+const renderPosts = (posts,props) => {
     if(!posts){
         return (
             <tr>
@@ -30,7 +30,13 @@ const renderPosts = (posts,props) => {
                 <button 
                     type="button" 
                     className="btn btn-danger"
-                    onClick={()=>handleDelete(posts, post.id)}    
+                    onClick={ ( )=> { 
+                        api.deletePost(post.id)
+                            .then(fetchPosts(props))
+                            .catch(err=>{
+                                alert('err')
+                            });
+                    }}    
                 >
                     Delete
                 </button> 
@@ -39,7 +45,7 @@ const renderPosts = (posts,props) => {
     ))
 }
 
-const Table = (props)=>{
+export default (props)=>{
     return (
         <table className="table table-striped mt-1">
             <thead>
@@ -57,14 +63,3 @@ const Table = (props)=>{
     )
 }
 
-const mapStateToProps = (state)=>{
-    return {
-        posts : state.posts
-    }
-}
-
-const mapActionToProps = { 
-    deletePost
-}
-
-export default connect(mapStateToProps,mapActionToProps)(Table)

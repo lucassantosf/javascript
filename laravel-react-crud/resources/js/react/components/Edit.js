@@ -2,22 +2,27 @@ import React, { useState, useEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import AppContainer from './AppContainer'
 import api from '../api'
-import { onEditSubmit } from '../actions'
-import { connect } from 'react-redux'
 
-const Edit = (props)=>{
+const Edit = ()=>{
     const { id } = useParams()
     const history = useHistory()
+    const [loading, setLoading] = useState(false)
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
 
-    const handleSubmit = async()=>{
-        props.onEditSubmit(
-            id,
-            title,
-            description,
-            history
-        )
+    const onEditSubmit = async()=>{
+        setLoading(true)
+        try {
+            await api.updatePost({
+                title,
+                description
+            },id)
+            history.push('/')
+        } catch (error) {
+            alert('error Edit post')
+        } finally {
+            setLoading(false) 
+        }
     } 
 
     useEffect(()=>{
@@ -42,8 +47,8 @@ const Edit = (props)=>{
                     <textarea  className="form-control" value={description} onChange={e=>setDescription(e.target.value)}></textarea>
                 </div>
                 <div className="form-group">
-                    <button type="button" onClick={handleSubmit} disabled={props.loading} className="btn btn-success">
-                        {props.loading ? 'Loaging' : 'Edit'}
+                    <button type="button" onClick={onEditSubmit} disabled={loading} className="btn btn-success">
+                        {loading ? 'Loaging' : 'Edit'}
                     </button>
                 </div>
             </form>
@@ -51,14 +56,4 @@ const Edit = (props)=>{
     );
 }
 
-const mapStateToProps = (state)=>{
-    return {
-        loading: state.loading
-    }
-}
-
-const mapActionToProps = {
-    onEditSubmit
-}
-
-export default connect(mapStateToProps,mapActionToProps)(Edit)  
+export default Edit

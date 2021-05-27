@@ -3,34 +3,29 @@ import { Link } from 'react-router-dom'
 import AppContainer from './AppContainer'
 import api from './../api' 
 import Table from './table' 
-import { connect } from 'react-redux'
-import { getPosts } from '../actions'
+  
+const Home = () => {   
+    const [posts,setPosts] = useState(null) 
 
-const Home = (props) => {   
-    
+    const fetchPosts = () => {
+        api.getAllPosts().then(res=>{ 
+            const result = res.data;
+            setPosts(result.data)
+        }) 
+    }
+
     useEffect(()=>{
-        props.getPosts()
+        fetchPosts();
     },[])
  
     return (
         <AppContainer title="Laravel ReactJs - Crud">
             <Link to="/add" className="btn btn-primary">Add post</Link>
             <div className="table-responsive"> 
-                <Table />
+                <Table posts={posts} fetchPosts={fetchPosts} />
             </div>
         </AppContainer>
     );
 }
 
-const mapStateToProps = (state)=>{
-    return {
-        posts : state.posts
-    }
-}
-
-const mapActionToProps = {
-    getPosts
-}
-
-export default connect(mapStateToProps,mapActionToProps)(Home)
-
+export default Home

@@ -1,20 +1,27 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import AppContainer from './AppContainer'
-import { connect } from 'react-redux'
-import { onAddSubmit } from '../actions'
+import api from '../api'
 
-const Add = (props)=>{
-    const history = useHistory()    
+const Add = ()=>{
+    const history = useHistory()
+    const [loading, setLoading] = useState(false)
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
 
-    const handleSubmit = async()=>{
-        props.onAddSubmit(
-            title,
-            description,
-            history
-        )          
+    const onAddSubmit = async()=>{
+        setLoading(true)
+        try {
+            await api.addPost({
+                title,
+                description
+            })
+            history.push('/')
+        } catch (error) {
+            alert('error add post')
+        } finally {
+            setLoading(false) 
+        }
     }
   
     return (
@@ -29,8 +36,8 @@ const Add = (props)=>{
                     <textarea  className="form-control" value={description} onChange={e=>setDescription(e.target.value)}></textarea>
                 </div>
                 <div className="form-group">
-                    <button type="button" onClick={handleSubmit} disabled={props.loading} className="btn btn-success">
-                        {props.loading ? 'Loaging' : 'Add'}
+                    <button type="button" onClick={onAddSubmit} disabled={loading} className="btn btn-success">
+                        {loading ? 'Loaging' : 'Add'}
                     </button>
                 </div>
             </form>
@@ -38,14 +45,4 @@ const Add = (props)=>{
     );
 }
 
-const mapStateToProps = (state)=>{
-    return {
-        loading: state.loading
-    }
-}
-
-const mapActionToProps = {
-    onAddSubmit
-}
-
-export default connect(mapStateToProps,mapActionToProps)(Add) 
+export default Add

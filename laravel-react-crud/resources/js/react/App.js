@@ -9,10 +9,6 @@ import Home from './components/Home'
 import Add from './components/Add'
 import Edit from './components/Edit'
  
-import { Provider } from 'react-redux'; 
-import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import reducers from './reducers';
 
 const App = ()=>{
     return (
@@ -31,12 +27,6 @@ const App = ()=>{
         </Router>
     );
 }
- 
-const store = createStore(reducers, applyMiddleware(thunk));
 
-ReactDom.render(
-    <Provider store={store}>
-        <App />
-    </Provider>,
-    document.getElementById('app')
-)
+
+ReactDom.render(<App />,document.getElementById('app'))
