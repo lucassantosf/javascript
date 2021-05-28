@@ -1,5 +1,6 @@
 const initialState = {
-  posts: [ ],
+  posts: [],
+  todos: [],
   loading: false
 };
 
@@ -20,7 +21,11 @@ export default function redux(state = initialState, action) {
       case "UPDATE_POSTS_SUCCESS":
         return {...state, loading: false} 
       case "UPDATE_POSTS_ERROR":
-        return {...state, loading: false}       
+        return {...state, loading: false} 
+      case "PUSH_TODOS_SUCCESS": 
+        return {...state, todos: action.todos}       
+      case "DELETE_TODOS_SUCCESS":
+        return {...state, todos: action.todos}   
       default:
         return state
     }

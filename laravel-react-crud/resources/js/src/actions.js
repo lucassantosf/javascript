@@ -69,7 +69,6 @@ export const onEditSubmit = (id, title, description, history)=>{
     }
 }
  
-
 export const deletePost = (posts, id)=>{
     return async(dispatch)=>{
         await api.deletePost(id)
@@ -83,5 +82,23 @@ export const deletePost = (posts, id)=>{
             .catch(err=>{
                 console.log(err)
             });
+    }
+}
+
+export const pushItem = (todos)=>{
+    return (dispatch)=>{ 
+        dispatch({
+            type: "PUSH_TODOS_SUCCESS",
+            todos
+        })
+    }
+}
+
+export const removeItem = (todos)=>{
+    return (dispatch)=>{
+        dispatch({
+            type: "DELETE_TODOS_SUCCESS",
+            todos
+        }) 
     }
 }

@@ -8,6 +8,7 @@ import {
 import Home from './components/Home'
 import Add from './components/Add'
 import Edit from './components/Edit'
+import Todo from './components/todo'
  
 import { Provider } from 'react-redux'; 
 import { createStore, applyMiddleware } from 'redux';
@@ -26,6 +27,9 @@ const App = ()=>{
                 </Route>
                 <Route exact path="/edit/:id">
                     <Edit />
+                </Route>
+                <Route exact path="/todo">
+                    <Todo />
                 </Route>
             </Switch>
         </Router>
