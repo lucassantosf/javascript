@@ -70,6 +70,68 @@ class PessoaController {
             return res.status(500).json(error.message)
         }
     }
+
+    static async matricula(req,res)
+    {
+        try {
+            const { estudante_id, matricula_id } = req.params
+            const resource = await database.Matricula.findOne({ 
+                where : { 
+                    id : Number(matricula_id) , 
+                    estudante_id: Number(estudante_id)
+                } 
+            })
+            return res.status(200).json(resource)
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
+    static async storeMatricula(req,res)
+    {
+        try {
+            const { estudante_id } = req.params
+            const data = {...req.body, estudante_id: Number(estudante_id)}
+            const resource = await database.Matricula.create(data)
+            return res.status(200).json(resource)
+        } catch (error) {
+            return res.status(500).json(error.message) 
+        }
+    }
+
+    static async updateMatricula(req,res)
+    {
+        try {
+            const { estudante_id, matricula_id } = req.params
+            const data = req.body
+            const resource = await database.Matricula.findOne({ 
+                where : { 
+                    id : Number(matricula_id) ,
+                    estudante_id: Number(estudante_id)
+                } 
+            })
+            resource.update(data)
+            return res.status(200).json(resource)
+        } catch (error) {
+            return res.status(500).json(error.message) 
+        }
+    }
+
+    static async destroyMatricula(req,res)
+    {
+        try {
+            const { estudante_id, matricula_id } = req.params 
+            await database.Matricula.destroy({ 
+                where : { 
+                    id : Number(matricula_id) ,
+                    estudante_id: Number(estudante_id)
+                } 
+            }) 
+            return res.status(200).json({message: `Destroyed resource id : ${matricula_id} `})
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
 }
 
 module.exports = PessoaController
