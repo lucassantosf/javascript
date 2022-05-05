@@ -8,4 +8,11 @@ export class Negociacoes {
     lista() {
         return this.negociacoes;
     }
+    paraTexto() {
+        return `
+            Data: 1,
+            Quantidade: 2,
+            Valor: 3,
+        `;
+    }
 }
