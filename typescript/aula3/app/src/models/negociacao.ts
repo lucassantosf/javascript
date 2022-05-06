@@ -1,6 +1,6 @@
-import { Imprimivel } from "../utils/imprimivel.js";
+import { Objeto } from "../interfaces/objeto.js";
 
-export class Negociacao implements Imprimivel{
+export class Negociacao implements Objeto<Negociacao>{
     constructor(
         private _data: Date, 
         public readonly quantidade: number, 

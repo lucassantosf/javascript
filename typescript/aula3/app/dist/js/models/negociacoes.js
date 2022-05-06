@@ -15,4 +15,8 @@ export class Negociacoes {
             Valor: 3,
         `;
     }
+    igual(negociacoes) {
+        return JSON.stringify(this.negociacoes) === JSON.stringify(negociacoes.lista());
+    }
 }
+//# sourceMappingURL=negociacoes.js.map
