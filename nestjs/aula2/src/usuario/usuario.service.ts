@@ -8,6 +8,8 @@ export class UsuarioService{
             nome: 'lucas',
             email: 'lucas',
             senha: 'lucas',
+            nomeCompleto: 'lucasfe',
+            dataDeEntrada: new Date()
         }
     ];
 
