@@ -23,7 +23,7 @@ function generateKey(salt){
     var random = getRandomArbitrary()
     var module = base_64(random)
 
-    var user_id = 4
+    var user_id = 3
     var secret_user = base_64(random*user_id)                                            
 
     var final = `${salt}.${date}.${module}.${secret_user}`                   
@@ -37,8 +37,8 @@ function base_64(text){
 
 //2ºGerar criptografia no backend e copiar dados
 //3ºColar valores abaixo para decriptografar
-var DataEncrypt = "eAU\/JTXVTZthJNlBmxGGYlzA84LWtV+joitYJL5thoI=";          //dado criptografado
-var DataKey = CryptoJS.enc.Utf8.parse("7e44024684b5c1bf0e47a536758a9ece");  //salt
+var DataEncrypt = "6br17SYHBp3b6rsd3wzeyw==";                               //dado criptografado
+var DataKey = CryptoJS.enc.Utf8.parse("06f1f1b06faadd232bdf38b58c087481");  //salt
 var DataVector = CryptoJS.enc.Utf8.parse("0000000000000000");
 var decrypted = CryptoJS.AES.decrypt(DataEncrypt, DataKey, { iv: DataVector });        
 var decrypted = CryptoJS.enc.Utf8.stringify(decrypted);
