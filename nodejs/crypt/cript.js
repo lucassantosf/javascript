@@ -1,14 +1,15 @@
+const CryptoJS = require('crypto-js');
+const encHex = require('crypto-js/enc-hex')
+const aes = require('crypto-js/aes')
+const padZeroPadding = require('crypto-js/pad-zeropadding')
 const moment = require("moment")
-const CryptoJS = require("crypto-js");
 
-var user_id = 3
-var salt = generateSalt()                         //chave simétrica
+var user_id = 3                                   
+var salt = generateSalt()                         //salt
 var chave_to_backend = generateKey(salt,user_id); //chave enviar backend
 
-//1º gerar salt and backend chaves
-console.log('salt',salt)
-console.log('backend',chave_to_backend)
-return true;
+let key = encHex.parse(salt);
+let iv =  encHex.parse("00000000000000000000000000000000");
 
 function generateSalt(){
     return CryptoJS.lib.WordArray.random(16).toString();
@@ -35,12 +36,12 @@ function base_64(text){
     return CryptoJS.enc.Base64.stringify(encodedWord);  
 }
 
-//2ºGerar criptografia no backend e copiar dados
-//3ºColar valores abaixo para decriptografar
-var DataEncrypt = "pceAC6oMunwdYlJD+l9P+whH7pwIQilzbi+g6lgpaOs=";           //dado criptografado
-var DataKey = CryptoJS.enc.Utf8.parse("6be23f128014172ac95a054f970b153c");  //salt
-var DataVector = CryptoJS.enc.Utf8.parse("0000000000000000");
-var decrypted = CryptoJS.AES.decrypt(DataEncrypt, DataKey, { iv: DataVector });        
-var decrypted = CryptoJS.enc.Utf8.stringify(decrypted);
+// Dados
+let msg = "11223344";
 
-console.log(decrypted);
+// Encrypt
+let encrypted = aes.encrypt(msg, key, {iv, padding:padZeroPadding}).toString();
+
+console.log('salt',salt)
+console.log('backend',chave_to_backend)
+console.log('encrypted',encrypted)
