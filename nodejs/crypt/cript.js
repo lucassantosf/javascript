@@ -37,11 +37,14 @@ function base_64(text){
 }
 
 // Dados
-let msg = "11223344";
+let msg = "1234";
+let msg2 = "307";
 
 // Encrypt
 let encrypted = aes.encrypt(msg, key, {iv, padding:padZeroPadding}).toString();
+let encrypted2 = aes.encrypt(msg2, key, {iv, padding:padZeroPadding}).toString();
 
 console.log('salt',salt)
 console.log('backend',chave_to_backend)
 console.log('encrypted',encrypted)
+console.log('encrypted2',encrypted2)
