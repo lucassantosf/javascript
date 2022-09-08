@@ -4,7 +4,7 @@ const aes = require('crypto-js/aes')
 const padZeroPadding = require('crypto-js/pad-zeropadding')
 const moment = require("moment")
 
-var user_id = 1                                   
+var user_id = 8                                   
 var salt = generateSalt()                         //salt
 var chave_to_backend = generateKey(salt,user_id); //chave enviar backend
 
@@ -37,8 +37,8 @@ function base_64(text){
 }
 
 // Dados
-let msg = "21342851099";
-let msg2 = "12345678999";
+let msg = "11223344";
+let msg2 = "1234";
 
 // Encrypt
 let encrypted = aes.encrypt(msg, key, {iv, padding:padZeroPadding}).toString();
