@@ -19,15 +19,9 @@ function getRandomArbitrary() {
     return Math.floor(Math.random() * 100)
 }
 
-function generateKey(salt,user_id){ 
+function generateKey(salt){ 
     var date = moment().format('YYYY-MM-DD HH:mm:ss');
-
-    var random = getRandomArbitrary()
-    var module = base_64(random)
-
-    var secret_user = base_64(random*user_id)                                            
-
-    var final = `${salt}.${date}.${module}.${secret_user}`                   
+    var final = `${salt}.${date}`                   
     return base_64(final);                                      
 }
 
