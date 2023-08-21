@@ -5,9 +5,9 @@ var salt = generateSalt()                         //chave simétrica
 var chave_to_backend = generateKey(salt);         //chave enviar backend
 
 //1º gerar salt and backend chaves
-console.log('salt',salt)
-console.log('backend',chave_to_backend)
-return true;
+// console.log('salt',salt)
+// console.log('backend',chave_to_backend)
+// return true;
 
 function generateSalt(){
     return CryptoJS.lib.WordArray.random(16).toString();
@@ -30,8 +30,8 @@ function base_64(text){
 
 //2ºGerar criptografia no backend e copiar dados
 //3ºColar valores abaixo para decriptografar
-var DataEncrypt = "DqvcXkrPZPNVXWZ/EQ++tF6biizdA5mMtAqFCDQqH4s=";           //dado criptografado
-var DataKey = CryptoJS.enc.Utf8.parse("0c1b5570dc4641e1f51abe9290f8eff6");  //salt
+var DataEncrypt = "IAWvNInO4SgCnwSpsKIGQ==";           //dado criptografado
+var DataKey = CryptoJS.enc.Utf8.parse("011e6db40d0784e22ee9290fda477f72");  //mesmo salt da primeira etapa
 var DataVector = CryptoJS.enc.Utf8.parse("0000000000000000");
 var decrypted = CryptoJS.AES.decrypt(DataEncrypt, DataKey, { iv: DataVector });        
 var decrypted = CryptoJS.enc.Utf8.stringify(decrypted);
