@@ -11,8 +11,10 @@
     "license": "ISC",
     "dependencies": {
         "axios": "^0.21.1",
+        "bigint-crypto-utils": "^3.3.0",
         "crypto": "^1.0.1",
         "crypto-js": "^4.1.1",
-        "moment": "^2.29.3"
+        "moment": "^2.29.3",
+        "node-rsa": "^1.1.1"
     }
 }
